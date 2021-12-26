@@ -1,11 +1,5 @@
 <template>
-  <div class="vue-form-wizard">
-    <loading 
-      :active.sync="showLoader"
-      :color="'#10069F'"
-      :width="250"
-      :is-full-page="true"
-    />
+  <div class="vue-long-wizard">
     <div class="row">
       <div class="col-md-11 center-col">
         <div
@@ -21,7 +15,7 @@
               class="fa fa-angle-left"
               aria-hidden="true"
             />
-            {{ $t('common-buttons.back') }}
+            {{ buttonText.back }}
           </button>
         </div>
       </div>
@@ -37,7 +31,7 @@
     >
       <div class="col-md-11 center-col">
         <slot
-          v-if="step===activeStep"
+          v-if="step===(stepIndex+1)"
           :id="'step'+step"
           :name="'step'+step"
         />
@@ -60,7 +54,7 @@
               class="btn btn-primary wizard-btn"
               @click="nextTab()"
             >
-              {{ $t('common-buttons.next') }}
+              {{ buttonText.next }}
             </button>
           </div>
         </div>
@@ -70,7 +64,6 @@
 </template>
 <script>
 import ProgressBar from './ProgressBar';
-import EventBus from './event-bus';
 import swal from '../components/swal';
 
 export default {
@@ -79,11 +72,16 @@ export default {
 	},
 	props:{
 		stepData: { type: Array, default: () => [] },
+		buttonText: { 
+      type: Object, 
+      default: {
+        'back':'Back',
+        'next':'Next',
+      }
+    },
 	},
 	data(){
 		return{
-			showLoader:false,
-			step_valid:true,
 			stepIndex:0,
 			emitFunctions:[],
 		};
@@ -92,20 +90,26 @@ export default {
 		totalSteps(){
 			return this.stepData.length;
 		},
-		activeStep(){
-			return this.stepData[this.stepIndex] ? this.stepData[this.stepIndex].step :0;
+		currentStep(){
+			return this.stepData[this.stepIndex] ? this.stepData[this.stepIndex] : null;
 		},
 		isLastStep(){
-			return this.stepData[this.stepIndex] ? this.stepData[this.stepIndex].laststep : false;
+			return (this.currentStep && this.currentStep.laststep) ? this.currentStep.laststep : false;
 		},
 		progress(){
-			return (this.activeStep/this.totalSteps)*100;
+			return ((this.stepIndex+1)/this.totalSteps)*100;
 		},
 		show_back_button(){
-			return this.stepData[this.stepIndex] ? this.stepData[this.stepIndex].backbutton :false;
+			return (this.currentStep && this.currentStep.show_back_button) ? this.currentStep.show_back_button :false;
 		},
 		show_next_button(){
-			return this.stepData[this.stepIndex] ? this.stepData[this.stepIndex].nextTab :true;
+			return (this.currentStep && this.currentStep.show_next_button) ? this.currentStep.show_next_button :true;
+		},
+		step_valid(){
+			return (this.currentStep && this.currentStep.step_valid) ? this.currentStep.step_valid :true;
+		},
+		step_skip(){
+			return (this.currentStep && this.currentStep.step_skip) ? this.currentStep.step_skip :false;
 		},
 	},
 	watch:{
@@ -136,60 +140,26 @@ export default {
 				}
 			} 
 		});
-		EventBus.$on('validateWizard', (step,valid) => {
-			if(step===this.activeStep && valid===true){
-				this.nextStep();
-				window.scrollTo(0, 0);
-			}
-			let emit_function=this.stepData[this.stepIndex].emit;
-			if(step===this.activeStep && valid==='wait' && emit_function!==''){
-				if(!this.emitFunctions.includes(emit_function)){
-					this.showLoader=true;
-					this.$emit(emit_function);
-					this.emitFunctions.push(emit_function);
-				}
-			}else if(step===this.activeStep && valid===false && emit_function!==''){
-				this.showLoader=false;
-				let emitIndex=this.emitFunctions.indexOf(this.stepData[this.stepIndex].emit);
-				if(emitIndex>-1){
-					this.emitFunctions.splice(emitIndex, 1);
-				}
-			}
-		});
 	},
 	methods:{
-		nextTab(){
-			if(this.stepData[this.stepIndex].validation===true){
-				EventBus.$emit('validateStep'+this.activeStep);
-			}else{
-				this.nextStep();
-			}
-
-		},
 		nextStep(){
-			this.showLoader=false;
+      if(!this.step_valid){
+				this.$emit('valdiateStep', this.stepIndex);
+        return false;
+      }
 			if(this.isLastStep){
 				this.$emit('onComplete');
 				return false;
 			}
 			this.stepIndex++;
-			while(this.stepData[this.stepIndex].stepskip===true){
+			while(this.step_skip===true){
 				this.stepIndex++;
 			}
 			window.location.hash = this.stepIndex;
 		},
 		prevTab(){
-			let emitIndex=this.emitFunctions.indexOf(this.stepData[this.stepIndex-1].emit);
-			if(emitIndex>-1){
-				this.emitFunctions.splice(emitIndex, 1);
-			}
 			this.stepIndex--;
-			while(this.stepData[this.stepIndex].stepskip===true){
-				let emitIndex=this.emitFunctions.indexOf(this.stepData[this.stepIndex-1].emit);
-				if(emitIndex>-1){
-					this.emitFunctions.splice(emitIndex, 1);
-				}
-
+			while(this.step_skip===true){
 				this.stepIndex--;
 			}
 			window.location.hash = this.stepIndex;
@@ -213,14 +183,14 @@ export default {
     {
         padding:15px 0;
     }
-    .vue-form-wizard .wizard-tab-content {
+    .vue-long-wizard .wizard-tab-content {
         min-height: 100px;
         padding: 0px 20px 10px;
     }
-    .vue-form-wizard {
+    .vue-long-wizard {
         padding-top: 100px;
     }
-    .vue-form-wizard .wizard-card-footer {
+    .vue-long-wizard .wizard-card-footer {
         background: #FFFFFF;
         box-shadow: 0 -2px 50px rgba(0, 0, 0, 0.15);
         position: fixed;
@@ -242,7 +212,7 @@ export default {
       color:white;
     }
     @media only screen and (max-width:768px) {
-        .vue-form-wizard .wizard-card-footer {
+        .vue-long-wizard .wizard-card-footer {
             background: #FFFFFF;
             box-shadow: 0 -2px 50px rgba(0, 0, 0, 0.15);
             position: fixed;
@@ -251,11 +221,11 @@ export default {
             padding: 20px 5% 20px 5%;
             left: 0;
         }
-        .vue-form-wizard .wizard-header
+        .vue-long-wizard .wizard-header
        {
            padding: 0;
        }
-        .vue-form-wizard .wizard-tab-content {
+        .vue-long-wizard .wizard-tab-content {
             min-height: 100px;
             padding: 30px 0px 10px;
         }
