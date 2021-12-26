@@ -1,11 +1,13 @@
 {
   "name": "vue-long-wizard",
   "version": "0.1.0",
+  "main": "src/index.js",
+  "bin": "src/index.js",
   "homepage": "https://github.com/yogeshgalav/vue-long-wizard",
-  "description": "Light weight and good looking vue table component.",
-  "keywords": ["vue table", "stripe", "api sorting", "multi line legend", "light weight"],
+  "description": "Vue component for handling long wizard with forms and progress bar.",
+  "keywords": ["Long wizard", "step skip", "progress bar", "multi step", "step validation"],
   "author": "Yogesh Galav <mr.yogesh.galav@gmail.com> (https://github.com/yogeshgalav/)",
-  "private": true,
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -14,6 +16,13 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "vue": "^2.6.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yogeshgalav/vue-long-wizard"
+  },
+  "bugs": {
+    "url": "https://github.com/yogeshgalav/vue-long-wizard/issues"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
