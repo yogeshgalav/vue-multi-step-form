@@ -1,9 +1,9 @@
-import VueNicePagination from "./VueNicePagination.vue";
+import VueMultiStepForm from "./VueMultiStepForm.js";
 
 function install(Vue) {
   if (install.installed) return;
   install.installed = true;
-  Vue.component("vue-nice-pagination", VueNicePagination);
+  Vue.component('vue-multi-step-form',VueMultiStepForm);
 }
 
 const plugin = {
@@ -20,6 +20,6 @@ if (GlobalVue) {
   GlobalVue.use(plugin);
 }
 
-VueNicePagination.install = install;
+VueMultiStepForm.install = install;
 
-export default VueNicePagination;
+export default VueMultiStepForm;

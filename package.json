@@ -1,11 +1,11 @@
 {
-  "name": "vue-long-wizard",
+  "name": "vue-multi-step-form",
   "version": "0.1.0",
   "main": "src/index.js",
   "bin": "src/index.js",
-  "homepage": "https://github.com/yogeshgalav/vue-long-wizard",
+  "homepage": "https://github.com/yogeshgalav/vue-multi-step-form",
   "description": "Vue component for handling long wizard with forms and progress bar.",
-  "keywords": ["Long wizard", "step skip", "progress bar", "multi step", "step validation"],
+  "keywords": ["vue multi step form", "vue long wizard", "step skip", "multi step", "step validation"],
   "author": "Yogesh Galav <mr.yogesh.galav@gmail.com> (https://github.com/yogeshgalav/)",
   "private": false,
   "scripts": {
@@ -19,10 +19,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yogeshgalav/vue-long-wizard"
+    "url": "https://github.com/yogeshgalav/vue-multi-step-form"
   },
   "bugs": {
-    "url": "https://github.com/yogeshgalav/vue-long-wizard/issues"
+    "url": "https://github.com/yogeshgalav/vue-multi-step-form/issues"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
